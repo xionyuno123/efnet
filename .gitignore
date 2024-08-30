@@ -1,0 +1,7 @@
+.bloop
+.metals
+.vscode
+.pytest_cache
+out
+verilog
+sim_build

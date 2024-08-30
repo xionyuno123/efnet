@@ -1,0 +1,31 @@
+{
+  "signal": [
+    {
+      "name": "clock",
+      "wave": "P........."
+    },
+    {
+      "name": "reset",
+      "wave": "lhl.....hl"
+    },
+    {
+      "name": "io_parity",
+      "wave": "x=========",
+      "data": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "io_data",
+      "wave": "xlhlhlhxhl"
+    }
+  ]
+}
