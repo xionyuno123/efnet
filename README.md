@@ -1,5 +1,6 @@
 # Mill setup
 ```shell
+# In VSCode with the Metals IDE, you'll need to install the Bloop extension to manage Scala projects using Mill. To install the Bloop extension, run the following command from your working directory:
 mill --import "ivy:com.lihaoyi::mill-contrib-bloop:" mill.contrib.bloop.Bloop/install
 ```
 

@@ -151,7 +151,7 @@ def clean():
    if dir.exists():
       shutil.rmtree(dir)
    else:
-      dir.mkdir()
+      dir.mkdir(parents=True)
 
 
 if __name__ == '__main__':
