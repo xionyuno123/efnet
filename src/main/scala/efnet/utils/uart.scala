@@ -45,7 +45,10 @@ class UartTx(width: Int, parity: Int, stop_bits: Int) extends Module {
   })
 
   // UART data frame length
-  val frame_len = width + 1 + parity + stop_bits
+  val frame_len = width + 1 + stop_bits + {
+    if (parity > 0) { 1 }
+    else { 0 }
+  }
 
   // A data register used to store user input data
   val r_data_in = RegInit(0.U(width.W))
@@ -131,19 +134,25 @@ class ParityGenerator(parity: Int) extends Module {
 
 /** UartRx Module
   *
-  * @param width
-  * @param parity
-  * @param stop_bits
-  * @param sample_factor:
+  * @param width:
+  *   data bit width
+  * @param parity:
+  *   0 disable parity, 1 odd parity, 2 even parity
+  * @param stop_bits:
+  *   number of stop bit, 1 or 2
+  * @param sample_freq:
+  *   Sampling frequency, with optional values of 8 and 16.
   *
   * @io:
-  *   - clock:
-  *   - reset:
-  *   - io_rx:
-  *   - io_data_out:
-  *   - io_data_rdy:
+  *   - clock: The sample clock must be set to a frequency that is a multiple of
+  *     the baud rate clock by the sample frequency
+  *   - reset: Synchronous reset signal
+  *   - io_rx: Used to receive serial data
+  *   - io_data_out: The received data is transmitted to the user in parallel
+  *   - io_data_valid: Inform the user that the io_data_out data is valid.
+  *   - io_data_error: when it is high, the error occurs.
   */
-class UartRx(width: Int, parity: Int, stop_bits: Int, sample_factor: Int)
+class UartRx(width: Int, parity: Int, stop_bits: Int, sample_freq: Int)
     extends Module {
   require(width >= 5 && width <= 8, "Data width must between 5 and 8 inclusive")
   require(
@@ -151,10 +160,75 @@ class UartRx(width: Int, parity: Int, stop_bits: Int, sample_factor: Int)
     "The optional parity values are 0, 1 and 2, 0 for disable data parity, 1 for odd, and 2 for even"
   )
   require(stop_bits == 1 || stop_bits == 2, "The stop bit is either 1 or 2")
+  require(
+    sample_freq == 8 || sample_freq == 16,
+    "Sampling frequency, with optional values of 8 and 16."
+  )
 
   val io = IO(new Bundle {
     val rx = Input(Bool())
     val data_out = Output(UInt(width.W))
-    val data_rdy = Output(Bool())
+    val data_valid = Output(Bool())
+    val data_error = Output(Bool())
   })
+
+  val frame_len = 1 + width + stop_bits + {
+    if (parity > 0) { 1 }
+    else { 0 }
+  };
+
+  /** Since UartRx and UartTx may operate in different time domains, there is a
+    * possibility of metastability when directly accept io_rx signal. To
+    * mitigate this risk, we need a secondary synchronizer to mask most of the
+    * metastability and ensure that the data signal meets the required holding
+    * time for the r_io_rx flip-flop.
+    */
+  val r_rx = RegNext(RegNext(io.rx))
+  val r_bit_cnt = RegInit(0.U(log2Ceil(frame_len).W))
+  val r_data_out = RegInit(0.U(width.W))
+  val parity_bit = RegInit(false.B)
+  val r_data_valid = RegInit(false.B)
+  val r_data_error = RegInit(false.B)
+
+  when(r_rx === false.B && r_bit_cnt === 0.U) {
+    r_bit_cnt := r_bit_cnt + 1.U
+    if (parity > 0) {
+      parity_bit := false.B
+    }
+    r_data_error := false.B
+    r_data_valid := false.B
+  }.elsewhen(r_bit_cnt >= 1.U && r_bit_cnt <= (width).U) {
+    r_data_out := Cat(r_data_out(width - 1, 1), r_rx)
+    r_bit_cnt := r_bit_cnt + 1.U
+    if (parity > 0) {
+      parity_bit := parity_bit ^ r_rx
+    }
+  }.elsewhen(r_bit_cnt > (width).U && (parity > 0).B) {
+    if (parity == 1) {
+        r_data_error := (r_rx === parity_bit)
+    } else {
+        r_data_error := (r_rx =/= parity_bit)
+    }
+    r_bit_cnt := r_bit_cnt + 1.U
+  }.elsewhen(
+    r_bit_cnt > (width).U && r_bit_cnt < (frame_len - 1).U && (parity == 0).B
+  ) {
+    r_data_valid := true.B
+    r_bit_cnt := r_bit_cnt + 1.U
+  }.elsewhen(r_bit_cnt === (frame_len - 1).U) {
+    r_bit_cnt := 0.U
+  }.otherwise({ r_bit_cnt := r_bit_cnt })
+
+  io.data_out := r_data_out
+  io.data_error := r_data_error
+  io.data_valid := r_data_valid
+}
+
+class UartDriver(width: Int, parity: Int, stop_bits: Int, sample_freq: Int)
+    extends Module {
+    val io = IO(new Bundle {
+      val data_in = Input(UInt(width.W))
+      val data_out = Input(UInt(width.W))
+       
+    })
 }

@@ -2,7 +2,7 @@ import random
 import cocotb
 import cocotb.utils
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, FallingEdge, Timer
+from cocotb.triggers import RisingEdge
 
 class UartUser:
   data_width:int

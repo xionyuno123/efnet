@@ -4,9 +4,13 @@ object = "UartTx"
 test = "test_uart_tx"
 timescale = "1ns/100ps"
 params = [
-  {"width" = 8, "parity"= 1, "stop_bits" = 1}
+  {"width" = 8, "parity"= 1, "stop_bits" = 1},
+  {"width" = 5, "parity"= 1, "stop_bits" = 1},
+  {"width" = 5, "parity"= 1, "stop_bits" = 2},
+  {"width" = 8, "parity"= 2, "stop_bits" = 1},
+  {"width" = 8, "parity"= 0, "stop_bits" = 1},
 ]
-# disable = true
+disable = true
 
 [[tests]]
 package = "efnet.utils"
@@ -30,3 +34,13 @@ params = [
   {"parity" = 2 },
 ]
 disable = true
+
+[[tests]]
+package = "efnet.utils"
+object = "UartRx"
+test = "test_uart_rx"
+timescale = "1ns/100ps"
+params = [
+  {"width" = 8, "parity"= 1, "stop_bits" = 1, "sample_freq" = 8}
+]
+# disable = true

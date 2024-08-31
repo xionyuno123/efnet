@@ -1,12 +1,9 @@
 from pathlib import Path
-import json
 
 import cocotb
 import cocotb.utils
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, FallingEdge, Timer
-import math
-import os
+from cocotb.triggers import RisingEdge
 
 async def _test_clock_divider(dut):
   global TEST_PARAM_CNT
