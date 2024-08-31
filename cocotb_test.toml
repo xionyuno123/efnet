@@ -2,6 +2,7 @@
 package = "efnet.utils"
 object = "UartTx"
 test = "test_uart_tx"
+timescale = "1ns/100ps"
 params = [
   {"width" = 8, "parity"= 1, "stop_bits" = 1}
 ]

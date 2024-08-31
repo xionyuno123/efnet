@@ -10,10 +10,14 @@ cocotb_dir = pathlib.Path(__file__).parent / "cocotb"
 class CocotbTest:
     test:str
     params:dict
+    timescale:str
 
-    def __init__(self,test:str,params:dict) -> None:
+    def __init__(self,test:str,params:dict,timescale:str | None) -> None:
         self.test = test
         self.params = params
+        if timescale is None:
+           timescale = "1ns/1ps"
+        self.timescale = timescale
         pass
 
 class EmitVerilogObject:
@@ -132,7 +136,7 @@ def buildCototbTest(objs:list[EmitVerilogObject]):
           f.write(f"    toplevel_lang = \"verilog\",\n")
           f.write(f"    toplevel = \"{obj.object_name}\",\n")
           f.write(f"    module = \"{target_test_file}\",\n")
-          f.write(f"    timescale = \"1ns/1ps\"\n")
+          f.write(f"    timescale = \"{test.timescale}\"\n")
           f.write(f"  )\n")
           f.write(f"  pass\n")
           f.write(f"\n")
@@ -171,7 +175,7 @@ if __name__ == '__main__':
       # print(params)
       for param in params:
         # print(param)
-        cocotb_tests = CocotbTest(test["test"],param)
+        cocotb_tests = CocotbTest(test["test"],param,test.get("timescale"))
         obj.add_cocotb_test(cocotb_tests)
       objs.append(obj)
     emitVerilog(objs)
