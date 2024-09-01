@@ -1,12 +1,11 @@
-base_dir=$(abspath ./)
-MILL ?= mill
-# TARGET ?= vivado
 
-all: 
-	cd $(base_dir) && $(MILL) efnet.compile
 
-test:
-	cd $(base_dir) && python cocotb_test.py
+
+fpga: 
+	cd fpga && make all	
+
+fpga-test:
+	cd fpga && make test
 
 clean:
 	rm -rf out/

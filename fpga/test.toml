@@ -1,0 +1,4 @@
+[[tests]]
+module = "common.uart"
+params = []
+timescale = "1ns/100ps"

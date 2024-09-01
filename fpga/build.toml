@@ -1,0 +1,10 @@
+[build]
+board = "alveo"
+variant = "100g"
+fpga = "au200"
+params = {}
+
+[test]
+simulator = "vcs"
+allowlist = "^common..*;^nic.alveo.100g.au200..*"
+# blacklist = "common.*"
