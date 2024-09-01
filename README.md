@@ -44,6 +44,10 @@ curl -L https://raw.githubusercontent.com/lefou/millw/0.4.11/millw > mill && chm
 sudo mv mill /usr/local/bin/
 ```
 
+### Vivado installation
+vivado installation will not be introduced in detail here. Please download and install vivado on its [official website](https://www.xilinx.com/support/download.html).
+
+
 # Testing
 Running the included testbenches requires [cocotb](https://github.com/cocotb/cocotb), [cocotb-test](https://github.com/themperek/cocotb-test) and [Synopsys vcs](https://www.synopsys.com/verification/simulation/vcs.html).
 
@@ -67,28 +71,3 @@ disable = true # Whether to disable these test cases
 
 ## Start testing
 Go to the root directory and run `make test` to start testing.
-
-
-# Mill setup
-```shell
-# In VSCode with the Metals IDE, you'll need to install the Bloop extension to manage Scala projects using Mill. To install the Bloop extension, run the following command from your working directory:
-mill --import "ivy:com.lihaoyi::mill-contrib-bloop:" mill.contrib.bloop.Bloop/install
-```
-
-# Python environment
-```shell
-pip3 install cocotb cocotb_test pytest
-```
-
-# Compile efnet
-```shell
-make
-```
-
-# Test
-efnet driven test by using cocotb
-
-```shell
-export SIM = "vcs" # you can use other simulator, e.g. verilator
-make test
-```
