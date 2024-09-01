@@ -12,10 +12,37 @@ Operation at 100G on Xilinx UltraScale+ devices currently requires using the Xil
 
 # Prerequirements
 ## OS system
-`Efnet` has only been tested on Linux, so it is the recommended operating system
+`Efnet` has only been tested on Linux, so it is the recommended operating system.
 
 ## Build environment
 
+### Chisel installation
+
+#### Install Java
+Scala runs on the Java Virtual Machine (JVM), so it is necessary to install a JDK to use Chisel. Chisel works on any version of Java version 8 or newer; however, we recommend using an LTS release version 17 or newer
+
+```shell
+# centos 7.9
+yum install java-11-openjdk
+# ubuntu 20.04
+sudo apt install openjdk-11-jre-headless
+sudo apt install openjdk-11-jdk-headless
+```
+
+#### Install scala
+`Efnet` requires scala version is 2.13.12.
+```shell
+# download scala 2.13.12
+wget https://downloads.lightbend.com/scala/2.13.12/scala-2.13.12.tgz
+tar -xvf scala-2.13.12 -C /user/local/share
+export PATH="$PATH:/usr/local/share/scala-2.13.12/bin"
+```
+#### Install mill
+After you have the mill installed for the first time, you need to run `mill setup` to download some dependencies.
+```shell
+curl -L https://raw.githubusercontent.com/lefou/millw/0.4.11/millw > mill && chmod +x mill
+sudo mv mill /usr/local/bin/
+```
 
 # Testing
 Running the included testbenches requires [cocotb](https://github.com/cocotb/cocotb), [cocotb-test](https://github.com/themperek/cocotb-test) and [Synopsys vcs](https://www.synopsys.com/verification/simulation/vcs.html).
