@@ -15,7 +15,7 @@ class ClockDivider(
   })
 
   if (div == 1) {
-    io.clock_out := io.clock_in
+    io.clock_out <> io.clock_in
   } else if (div == 2) {
     // optimize delay register
     withClockAndReset(clock = io.clock_in.asClock, reset = io.reset) {
@@ -45,6 +45,7 @@ class ClockDivider(
         clk_out := ~clk_out
         cnt := 1.U
       }.otherwise (cnt := cnt + 1.U)
+      io.clock_out := clk_out
     }
   }
 }
