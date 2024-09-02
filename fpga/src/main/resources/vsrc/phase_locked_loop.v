@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module phase_locked_loop (
+module PhaseLockedLoop (
   output  clock_out,
   input   reset,
   output  locked,
