@@ -21,8 +21,12 @@ class ChiselModule():
     if paramstr != "":
       paramstr = paramstr[:-1]
 
-    return f"circt.stage.ChiselStage.emitSystemVerilogFile(new {self.name}({paramstr}),Array(\"--target-dir\",\"{self.target_dir}\"))"
-
+    return f"""
+  circt.stage.ChiselStage.emitSystemVerilogFile(
+    new {self.name}({paramstr}),
+    firtoolOpts = Array("-o","./rtl","--split-verilog","-disable-all-randomization","-strip-debug-info")
+  )
+"""
 
 class SVGenerator():
   modules: list[ChiselModule]
