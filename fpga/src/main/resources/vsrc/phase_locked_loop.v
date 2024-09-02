@@ -1,4 +1,4 @@
-`timescala 1ns/1ps
+`timescale 1ns/1ps
 
 module phase_locked_loop (
   output  clock_out,
