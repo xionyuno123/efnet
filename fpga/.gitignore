@@ -1,2 +1,6 @@
 src/main/scala/main.scala
 rtl/*sv
+.vscode
+.metals
+.bloop
+out
