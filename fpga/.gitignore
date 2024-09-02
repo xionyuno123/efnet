@@ -4,3 +4,4 @@ rtl/*sv
 .metals
 .bloop
 out
+build

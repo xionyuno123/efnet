@@ -28,7 +28,7 @@
 ###################################################################
 
 # phony targets
-.PHONY: fpga vivado tmpclean clean distclean
+.PHONY: fpga vivado tmpclean clean distclean syn impl project
 
 # prevent make from deleting intermediate files and reports
 .PRECIOUS: %.xpr %.bit %.mcs %.prm
@@ -43,17 +43,12 @@ PROJECT ?= $(FPGA_TOP)
 NUM_JOBS ?= $(shell nproc)
 
 # filter files whose path start with "/" or "./"
-SYN_FILES_REL = $(foreach p,$(SYN_FILES),$(if $(filter /% ./%,$p),$p,../$p))
-INC_FILES_REL = $(foreach p,$(INC_FILES),$(if $(filter /% ./%,$p),$p,../$p))
-XCI_FILES_REL = $(foreach p,$(XCI_FILES),$(if $(filter /% ./%,$p),$p,../$p))
-IP_TCL_FILES_REL = $(foreach p,$(IP_TCL_FILES),$(if $(filter /% ./%,$p),$p,../$p))
-CONFIG_TCL_FILES_REL = $(foreach p,$(CONFIG_TCL_FILES),$(if $(filter /% ./%,$p),$p,../$p))
-
-# ifdef XDC_FILES
-# 	XDC_FILES_REL = $(foreach p,$(XDC_FILES),$(if $(filter /% ./%,$p),$p,../$p))
-# else
-# 	XDC_FILES_REL = $(PROJECT).xdc
-# endif
+SYN_FILES_REL = $(foreach p,$(SYN_FILES),$(ROOT_DIR)/$p)
+INC_FILES_REL = $(foreach p,$(INC_FILES),$(ROOT_DIR)/$p)
+XCI_FILES_REL = $(foreach p,$(XCI_FILES),$(ROOT_DIR)/$p)
+IP_TCL_FILES_REL = $(foreach p,$(IP_TCL_FILES),$(ROOT_DIR)/$p)
+CONFIG_TCL_FILES_REL = $(foreach p,$(CONFIG_TCL_FILES),$(ROOT_DIR)/$p)
+XDC_FILES_REL = $(foreach p,$(XDC_FILES),$(ROOT_DIR)/$p)
 
 ###################################################################
 # Main Targets
@@ -63,6 +58,12 @@ CONFIG_TCL_FILES_REL = $(foreach p,$(CONFIG_TCL_FILES),$(if $(filter /% ./%,$p),
 ###################################################################
 
 all: fpga
+
+project: $(PROJECT).xpr
+
+syn: $(PROJECT).runs/synth_1/$(PROJECT).dcp
+
+impl: $(PROJECT).runs/impl_1/$(PROJECT)_routed.dcp
 
 fpga: $(PROJECT).bit
 
@@ -106,7 +107,7 @@ $(PROJECT).xpr: create_project.tcl update_config.tcl
 	vivado -nojournal -nolog -mode batch $(foreach x,$?,-source $x)
 
 # synthesis run
-$(PROJECT).runs/synth_1/$(PROJECT).dcp: create_project.tcl update_config.tcl $(SYN_FILES_REL) $(INC_FILES_REL) $(XDC_FILES_REL) | $(PROJECT).xpr
+$(PROJECT).runs/synth_1/$(PROJECT).dcp: create_project.tcl update_config.tcl $(SYN_FILES_REL) $(INC_FILES_REL) $(XDC_FILES_REL) $(PROJECT).xpr
 	echo "open_project $(PROJECT).xpr" > run_synth.tcl
 	echo "reset_run synth_1" >> run_synth.tcl
 	echo "launch_runs -jobs $(NUM_JOBS) synth_1" >> run_synth.tcl
