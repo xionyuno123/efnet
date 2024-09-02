@@ -93,7 +93,7 @@ class FpgaBuilder():
       return
     
     # generate systemverilog
-    module_name = f"efnet.nic.{self.fpga_board}.{self.fpga_variant}.{self.fpga_name}.EfnetNic"
+    module_name = f"efnet.nic.{self.fpga_board}.{self.fpga_variant}.{self.fpga_name}.EfnetFpga"
     module = ChiselModule(name=module_name,target_dir=self.fpga_dir/"rtl",params=self.fpga_params)
     sv_gen = SVGenerator(self.fpga_dir,modules=[module])
     sv_gen.gen("rtlbuild")
